@@ -3,3 +3,8 @@ CMakeFiles/
 cmake_install.cmake
 Makefile
 nbody
+deps/glfw/docs
+deps/glfw/src
+deps/glfw/examples
+deps/glfw/tests
+deps/glfw/cmake_uninstall.cmake
