@@ -2,7 +2,12 @@
 #include <stdexcept>
 #include <glm/gtc/type_ptr.hpp>
 
+Program::Program() : mObject(0) {}
 Program::Program(const std::vector<Shader>& shaders) : mObject(0) {
+  setShaders(shaders);
+}
+
+void Program::setShaders(const std::vector<Shader>& shaders) {
   // typically would be 2 shaders, one vertex and one fragment (pixel)
   if (shaders.size() <= 0)
     throw std::runtime_error("At least one shader is required to create program");
@@ -69,7 +74,7 @@ GLint Program::attrib(const GLchar* attribName) const {
     throw std::runtime_error(std::string("Program attribute not found: '") + attribName +
                               std::string("'. Check attribute name in shader code"));
   return attrib;
-} 
+}
 
 GLint Program::uniform(const GLchar* uniformName) const {
   if (!uniformName)

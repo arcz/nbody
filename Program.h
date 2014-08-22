@@ -8,9 +8,11 @@
 
 class Program {
 public:
+  Program();
   Program(const std::vector<Shader>& shaders);
   ~Program();
-    
+
+  void setShaders(const std::vector<Shader>& shaders);
   GLuint object() const;
   void use() const;
   bool isInUse() const;
