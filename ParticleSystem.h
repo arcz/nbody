@@ -18,4 +18,5 @@ protected:
   std::vector<glm::vec3> mPositions;
   std::vector<glm::vec3> mVelocities;
   std::vector<glm::vec3> mAccelerations;
+  std::vector<float> mMasses;
 };

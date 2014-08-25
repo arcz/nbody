@@ -51,6 +51,9 @@ int main() {
   std::cout << "Vendor: " << glGetString(GL_VENDOR) << std::endl;
   std::cout << "Renderer: " << glGetString(GL_RENDERER) << std::endl;
 
+  glEnable(GL_DEPTH_TEST);
+  glDepthFunc(GL_LEQUAL);
+
   // load vertex and fragment shaders into opengl
   std::vector<Shader> shaders;
   shaders.push_back(Shader::createFromFile("./vertex_shader.glsl", GL_VERTEX_SHADER));
@@ -86,7 +89,7 @@ int main() {
 
   ParticleSystem particleSystem(&camera.mViewMatrix, &camera.mProjMatrix);
 
-  float deltaTime;
+  double deltaTime = 1.0;
   const float cameraSpeed = 200.0f;
 
   while (!glfwWindowShouldClose(window))
@@ -97,16 +100,16 @@ int main() {
       glfwSetWindowShouldClose(window, GL_TRUE);
 
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-      camera.move(glm::vec3(0, 0, 1) * deltaTime * cameraSpeed);
+      camera.move(glm::vec3(0, 0, 1) * (float)deltaTime * cameraSpeed);
 
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-      camera.move(glm::vec3(0, 0, -1) * deltaTime * cameraSpeed);
+      camera.move(glm::vec3(0, 0, -1) * (float)deltaTime * cameraSpeed);
 
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-      camera.move(glm::vec3(1, 0, 0) * deltaTime * cameraSpeed);
+      camera.move(glm::vec3(1, 0, 0) * (float)deltaTime * cameraSpeed);
 
     if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-      camera.move(glm::vec3(-1, 0, 0) * deltaTime * cameraSpeed);
+      camera.move(glm::vec3(-1, 0, 0) * (float)deltaTime * cameraSpeed);
 
 
     // clear everything
@@ -135,6 +138,8 @@ int main() {
     glfwPollEvents();
 
     deltaTime = glfwGetTime() - old_time;
+
+    particleSystem.update(deltaTime);
   }
 
   glfwDestroyWindow(window);
