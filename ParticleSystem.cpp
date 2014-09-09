@@ -65,17 +65,16 @@ ParticleSystem::ParticleSystem(glm::mat4* viewMatrix, glm::mat4* projMatrix) :
 
 void ParticleSystem::draw() {
   glBindBuffer(GL_ARRAY_BUFFER, mParticlesPositionBuffer);
-  glBufferData(GL_ARRAY_BUFFER, mPositions.size() * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW); // Buffer orphaning, a common way to improve streaming perf. See above link for details.
+  glBufferData(GL_ARRAY_BUFFER, mPositions.size() * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW);
   glBufferSubData(GL_ARRAY_BUFFER, 0, mPositions.size() * sizeof(GLfloat) * 4, mPositions.data());
 
   glBindBuffer(GL_ARRAY_BUFFER, mParticlesColorBuffer);
-  glBufferData(GL_ARRAY_BUFFER, mPositions.size() * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW); // Buffer orphaning, a common way to improve streaming perf. See above link for details.
+  glBufferData(GL_ARRAY_BUFFER, mPositions.size() * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW);
   glBufferSubData(GL_ARRAY_BUFFER, 0, mPositions.size() * sizeof(GLfloat) * 4, mAccelerations.data());
 
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-  // Use our shader
   mProgram.use();
 
   // Bind our texture in Texture Unit 0
@@ -84,7 +83,7 @@ void ParticleSystem::draw() {
   // Set our "myTextureSampler" sampler to user Texture Unit 0
   //glUniform1i(TextureID, 0);
 
-  // Same as the billboards tutorial
+  // set camera for camera facing billboards
   glUniform3f(mProgram.uniform("CameraRight_worldspace"), (*mViewMatrix)[0][0], (*mViewMatrix)[1][0], (*mViewMatrix)[2][0]);
   glUniform3f(mProgram.uniform("CameraUp_worldspace"), (*mViewMatrix)[0][1], (*mViewMatrix)[1][1], (*mViewMatrix)[2][1]);
 
@@ -121,8 +120,8 @@ void ParticleSystem::draw() {
   glVertexAttribPointer(
     2,                                // attribute. No particular reason for 1, but must match the layout in the shader.
     3,                                // size : r + g + b + a => 4
-    GL_FLOAT,                 // type
-    GL_TRUE,                          // normalized?    *** YES, this means that the unsigned char[4] will be accessible with a vec4 (floats) in the shader ***
+    GL_FLOAT,                         // type
+    GL_TRUE,                          // normalized?
     0,                                // stride
     (void*)0                          // array buffer offset
   );
@@ -135,11 +134,8 @@ void ParticleSystem::draw() {
   glVertexAttribDivisor(1, 1); // positions : one per quad (its center)                 -> 1
   glVertexAttribDivisor(2, 1); // color : one per quad                                  -> 1
 
-  // Draw the particules !
-  // This draws many times a small triangle_strip (which looks like a quad).
-  // This is equivalent to :
-  // for(i in mPositions.size()) : glDrawArrays(GL_TRIANGLE_STRIP, 0, 4),
-  // but faster.
+  // draw particles using instancing
+  // http://www.opengl.org/wiki/Vertex_Rendering#Instancing
   glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, mPositions.size());
 
   glDisableVertexAttribArray(0);
