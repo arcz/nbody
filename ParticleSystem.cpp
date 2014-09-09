@@ -158,7 +158,6 @@ for(unsigned i=start; i<end; i++){
 	mAccelerations[i] = glm::vec3(0.0f, 0.0f, 0.0f);
 	for(unsigned j=0; j<MAX_PARTICLES; j++){
       if (i == j) continue;
-      //glm::vec3 r = mPositions[j] - mPositions[i];
       float rx = mPositions[j].x - mPositions[i].x;
       float ry = mPositions[j].y - mPositions[i].y;
       float rz = mPositions[j].z - mPositions[i].z;
@@ -179,37 +178,12 @@ for(unsigned i=start; i<end; i++){
 
 void ParticleSystem::update(float deltaTime) {
 	std::thread ts[4];
-/*  for (unsigned i = 0; i < MAX_PARTICLES; i++) {
-    mAccelerations[i] = glm::vec3(0.0f, 0.0f, 0.0f);
-
-    for (unsigned j = 0; j < MAX_PARTICLES; j++) {
-      if (i == j) continue;
-      //glm::vec3 r = mPositions[j] - mPositions[i];
-      float rx = mPositions[j].x - mPositions[i].x;
-      float ry = mPositions[j].y - mPositions[i].y;
-      float rz = mPositions[j].z - mPositions[i].z;
-
-      float distSqr = rx * rx + ry * ry + rz * rz + EPS2;
-      float distSixth = distSqr * distSqr * distSqr;
-      float invDistCube = 1.0f/sqrtf(distSixth);
-      float s = mMasses[i] * invDistCube;
-      mAccelerations[i].x += rx * s;
-      mAccelerations[i].y += ry * s;
-      mAccelerations[i].z += rz * s;
-    }
-*/
     	ts[0] = std::thread(mThread,std::ref(mPositions),std::ref(mMasses),std::ref(mAccelerations),std::ref(mVelocities),0,MAX_PARTICLES/4,deltaTime);
 	ts[1] = std::thread(mThread,std::ref(mPositions),std::ref(mMasses),std::ref(mAccelerations),std::ref(mVelocities),MAX_PARTICLES/4,MAX_PARTICLES/2,deltaTime);
 	ts[2] = std::thread(mThread,std::ref(mPositions),std::ref(mMasses),std::ref(mAccelerations),std::ref(mVelocities),MAX_PARTICLES/2,3*MAX_PARTICLES/4,deltaTime);
 	ts[3] = std::thread(mThread,std::ref(mPositions),std::ref(mMasses),std::ref(mAccelerations),std::ref(mVelocities),3*MAX_PARTICLES/4,MAX_PARTICLES,deltaTime);
 
 	for(auto& t : ts) t.join();
-/*
-
-    mVelocities[i] += mAccelerations[i] * deltaTime;
-    mPositions[i] += mVelocities[i] * deltaTime;
-    }
-  */
 }
 
 
