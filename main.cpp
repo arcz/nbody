@@ -10,7 +10,7 @@
 #include "Camera2.h"
 #include "ParticleSystem.h"
 // constants
-const glm::vec2 SCREEN_SIZE(1200, 800);
+const glm::vec2 SCREEN_SIZE(1400, 800);
 
 int main() {
 
@@ -128,7 +128,7 @@ int main() {
     glEnableVertexAttribArray(program.attrib("position"));
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-    glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+    //glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
     program.stopUsing();
 
