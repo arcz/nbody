@@ -2,7 +2,7 @@
 #include <iostream>
 #include <random>
 #include <thread>
-
+#include "Consts.h"
 static const unsigned MAX_PARTICLES = 500;
 
 ParticleSystem::ParticleSystem(glm::mat4* viewMatrix, glm::mat4* projMatrix) :
@@ -43,18 +43,18 @@ ParticleSystem::ParticleSystem(glm::mat4* viewMatrix, glm::mat4* projMatrix) :
   // RANDOMIZE
   std::random_device rd;
   std::default_random_engine gen(rd());
-  std::uniform_real_distribution<float> dist(-100.0f, 100.0f);
-  std::uniform_real_distribution<float> dist2(10.0f, 1000.0f);
-  std::uniform_real_distribution<float> dist3(0.001, 1.0f);
+  std::uniform_real_distribution<float> dist(Consts::minPos, Consts::maxPos);
+  std::uniform_real_distribution<float> dist2(Consts::minMass, Consts::maxMass);
+  std::uniform_real_distribution<float> dist3(Consts::minVel, Consts::maxVel);
 
-  for(int i = 0; i < MAX_PARTICLES/2; i++) {
+  for(int i = 0; i < MAX_PARTICLES/2; ++i) {
     mPositions.push_back(glm::vec3(-150, 0, 0) + glm::vec3(dist(gen), dist(gen), dist(gen)));
     mVelocities.push_back(glm::vec3(dist3(gen), dist3(gen), dist3(gen)));
     mAccelerations.push_back(glm::vec3(0, 0, 0));
     mMasses.push_back(dist2(gen));
   }
 
-  for(int i = MAX_PARTICLES/2; i < MAX_PARTICLES; i++) {
+  for(int i = MAX_PARTICLES/2; i < MAX_PARTICLES; ++i) {
     mPositions.push_back(glm::vec3(150, 0, 0) + glm::vec3(dist(gen), dist(gen), dist(gen)));
     mVelocities.push_back(glm::vec3(dist3(gen), dist3(gen), dist3(gen)));
     mAccelerations.push_back(glm::vec3(0, 0, 0));
@@ -149,23 +149,23 @@ void ParticleSystem::draw() {
 }
 
 // stała grawitacji
-static constexpr float G = 6.673848080E-3;
+//static constexpr float G = 6.673848080E-3;
 // dokładność działań na double
-static constexpr float EPS2 = 1.0E+2;
+//static constexpr float EPS2 = 1.0E+2;
 
 void mThread(std::vector<glm::vec3>& mPositions,std::vector<float>& mMasses,std::vector<glm::vec3>& mAccelerations,std::vector<glm::vec3>& mVelocities,unsigned start,unsigned end,float deltaTime){
-for(unsigned i=start; i<end; i++){
+for(unsigned i=start; i<end; ++i){
 	mAccelerations[i] = glm::vec3(0.0f, 0.0f, 0.0f);
-	for(unsigned j=0; j<MAX_PARTICLES; j++){
+	for(unsigned j=0; j<MAX_PARTICLES; ++j){
       if (i == j) continue;
       float rx = mPositions[j].x - mPositions[i].x;
       float ry = mPositions[j].y - mPositions[i].y;
       float rz = mPositions[j].z - mPositions[i].z;
 
-      float distSqr = rx * rx + ry * ry + rz * rz + EPS2;
+      float distSqr = rx * rx + ry * ry + rz * rz + Consts::EPS;
       float distSixth = distSqr * distSqr * distSqr;
       float invDistCube = 1.0f/sqrtf(distSixth);
-      float s = mMasses[i] * invDistCube;
+      float s = mMasses[i] * invDistCube*Consts::G;
       mAccelerations[i].x += rx * s;
       mAccelerations[i].y += ry * s;
       mAccelerations[i].z += rz * s;
