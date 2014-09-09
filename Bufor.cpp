@@ -7,7 +7,7 @@ Bufor::Bufor(const int size): n(size){
 Bufor::~Bufor(){
 	delete [] data;
 }
-void Bufor::setRandom(double minDist, double maxDist, double minW, double maxW){
+void Bufor::setRandom(float minDist, float maxDist, float minW, float maxW){
 	for(int i=0; i<n;++i){
 		data[i].set( Zakres(minDist, maxDist), Zakres(minW, maxW) );
 	}
@@ -39,7 +39,7 @@ void milyPanPracownik(Bufor& buf, int major, int minor){
 	}
 }
 
-void Bufor::next(double deltaTime){
+void Bufor::next(float deltaTime){
 	for(int i = 0 ; i<n ; ++i) data[i].clearF();
 	
 	std::thread ts[4];

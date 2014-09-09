@@ -1,17 +1,17 @@
 #include "Wektor.h"
 
 Wektor::Wektor(): x(0.0), y(0.0), z(0.0){}
-Wektor::Wektor(const double & x, const double & y, const double & z): x(x), y(y), z(z){}
-const double Wektor::len()const{
-	double r = sqrt(x*x + y*y + z*z);
+Wektor::Wektor(const float & x, const float & y, const float & z): x(x), y(y), z(z){}
+const float Wektor::len()const{
+	float r = sqrt(x*x + y*y + z*z);
 	return r > S::Epsil ? r : S::Epsil;
 }
 
-Wektor Wektor::operator*(const double & a)const {
+Wektor Wektor::operator*(const float & a)const {
 	return Wektor(x*a, y*a, z*a);
 }
 
-Wektor Wektor::operator/(const double & a)const {
+Wektor Wektor::operator/(const float & a)const {
 	return Wektor(x/a, y/a, z/a);
 }
 Wektor Wektor::operator+(const Wektor & vec) const{
@@ -32,23 +32,23 @@ void Wektor::operator-=(const Wektor & vec){
 	y-=vec.y;
 	z-=vec.z;
 }
-void Wektor::operator*=(const double & a){
+void Wektor::operator*=(const float & a){
 	x*=a; y*=a; z*=a;
 }		
-double & Wektor::getX(){
+float & Wektor::getX(){
 	return x;
 }
-double & Wektor::getY(){
+float & Wektor::getY(){
 	return y;
 }
-double & Wektor::getZ(){
+float & Wektor::getZ(){
 	return z;
 }
 void Wektor::clear(){
 	x=0; y=0; z=0;
 }
 
-Wektor operator*(const double & a, const Wektor & vec){
+Wektor operator*(const float & a, const Wektor & vec){
 	return vec*a;
 }
 
