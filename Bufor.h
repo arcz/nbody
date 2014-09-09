@@ -7,17 +7,25 @@
 
 using namespace std;
 
-
+//Klasa reprezentująca bufor przechowujący dane o wszystkich cząsteczkach
 class Bufor{
 	public:
+		//Konstruktor, przyjmuje:
+		//int size - ilość cząsteczek
 		Bufor(const int size);
 		~Bufor();
-		void setRandom(float minDist, float maxDist, float minW, float maxW);
+		//funkcja generująca wstępne dane w buforze, przyjmuje:
+		//float minDist - minimalne przesunięcie począkowe
+		//float maxDist - maksmalne przesunięcie początkowe
+		//float minM - minimalna masa cząsteczki
+		//float maxM - maksymalna masa cząsteczki
+		void setRandom(float minDist, float maxDist, float minM, float maxM);
+		//funkcja zwracająca tablicę obiektów typu Cialo, które reprezentują poszczególne cząsteczki
 		Cialo * getData();
+		//funkcja zwracająca ilość cząsteczek
 		const int getN()const;
+		//funkcja obliczająca następny krok iteracyjny w modelu
 		void next(float deltaTime);
-//		void threadWorker(int b1, int e1, float deltaTime);
-//		friend void threadWorker(Bufor&, int,int);
 	private:
 		Cialo * data;
 		const int n;
