@@ -96,36 +96,36 @@ void ParticleSystem::draw() {
   glEnableVertexAttribArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, mBillboardVertexBuffer);
   glVertexAttribPointer(
-    0,                  // attribute. No particular reason for 0, but must match the layout in the shader.
-    3,                  // size
-    GL_FLOAT,           // type
-    GL_FALSE,           // normalized?
-    0,                  // stride
-    (void*)0            // array buffer offset
+    0,           // attribute. No particular reason for 0, but must match the layout in the shader.
+    3,           // size
+    GL_FLOAT,    // type
+    GL_FALSE,    // normalized?
+    0,           // stride
+    (void*)0     // array buffer offset
   );
 
   // 2nd attribute buffer : positions of particles' centers
   glEnableVertexAttribArray(1);
   glBindBuffer(GL_ARRAY_BUFFER, mParticlesPositionBuffer);
   glVertexAttribPointer(
-    1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
-    3,                                // size : x + y + z => 3
-    GL_FLOAT,                         // type
-    GL_FALSE,                         // normalized?
-    0,                                // stride
-    (void*)0                          // array buffer offset
+    1,           // attribute. No particular reason for 1, but must match the layout in the shader.
+    3,           // size : x + y + z => 3
+    GL_FLOAT,    // type
+    GL_FALSE,    // normalized?
+    0,           // stride
+    (void*)0     // array buffer offset
   );
 
   // 3rd attribute buffer : particles' colors
   glEnableVertexAttribArray(2);
   glBindBuffer(GL_ARRAY_BUFFER, mParticlesColorBuffer);
   glVertexAttribPointer(
-    2,                                // attribute. No particular reason for 1, but must match the layout in the shader.
-    3,                                // size : r + g + b + a => 4
-    GL_FLOAT,                         // type
-    GL_TRUE,                          // normalized?
-    0,                                // stride
-    (void*)0                          // array buffer offset
+    2,           // attribute. No particular reason for 1, but must match the layout in the shader.
+    3,           // size : r + g + b + a => 4
+    GL_FLOAT,    // type
+    GL_TRUE,     // normalized?
+    0,           // stride
+    (void*)0     // array buffer offset
   );
 
   // These functions are specific to glDrawArrays*Instanced*.
@@ -145,15 +145,15 @@ void ParticleSystem::draw() {
   glDisableVertexAttribArray(2);
 }
 
-// stała grawitacji
-//static constexpr float G = 6.673848080E-3;
-// dokładność działań na double
-//static constexpr float EPS2 = 1.0E+2;
+static void mThread(std::vector<glm::vec3>& mPositions,
+             std::vector<float>& mMasses,
+             std::vector<glm::vec3>& mAccelerations,
+             std::vector<glm::vec3>& mVelocities,
+             unsigned start, unsigned end, float deltaTime) {
+  for(unsigned i = start; i < end; ++i) {
+    mAccelerations[i] = glm::vec3(0.0f, 0.0f, 0.0f);
 
-void mThread(std::vector<glm::vec3>& mPositions,std::vector<float>& mMasses,std::vector<glm::vec3>& mAccelerations,std::vector<glm::vec3>& mVelocities,unsigned start,unsigned end,float deltaTime){
-for(unsigned i=start; i<end; ++i){
-	mAccelerations[i] = glm::vec3(0.0f, 0.0f, 0.0f);
-	for(unsigned j=0; j<MAX_PARTICLES; ++j){
+    for(unsigned j = 0; j < MAX_PARTICLES; ++j) {
       if (i == j) continue;
       float rx = mPositions[j].x - mPositions[i].x;
       float ry = mPositions[j].y - mPositions[i].y;
@@ -169,18 +169,28 @@ for(unsigned i=start; i<end; ++i){
 	}
     mVelocities[i] += mAccelerations[i] * deltaTime;
     mPositions[i] += mVelocities[i] * deltaTime;
-}
+  }
 
 }
 
 void ParticleSystem::update(float deltaTime) {
-	std::thread ts[4];
-    	ts[0] = std::thread(mThread,std::ref(mPositions),std::ref(mMasses),std::ref(mAccelerations),std::ref(mVelocities),0,MAX_PARTICLES/4,deltaTime);
-	ts[1] = std::thread(mThread,std::ref(mPositions),std::ref(mMasses),std::ref(mAccelerations),std::ref(mVelocities),MAX_PARTICLES/4,MAX_PARTICLES/2,deltaTime);
-	ts[2] = std::thread(mThread,std::ref(mPositions),std::ref(mMasses),std::ref(mAccelerations),std::ref(mVelocities),MAX_PARTICLES/2,3*MAX_PARTICLES/4,deltaTime);
-	ts[3] = std::thread(mThread,std::ref(mPositions),std::ref(mMasses),std::ref(mAccelerations),std::ref(mVelocities),3*MAX_PARTICLES/4,MAX_PARTICLES,deltaTime);
+  std::thread ts[4];
+  ts[0] = std::thread(mThread, std::ref(mPositions), std::ref(mMasses),
+                      std::ref(mAccelerations), std::ref(mVelocities),
+                      0, MAX_PARTICLES/4, deltaTime);
 
-	for(auto& t : ts) t.join();
+  ts[1] = std::thread(mThread, std::ref(mPositions), std::ref(mMasses),
+                      std::ref(mAccelerations),std::ref(mVelocities),
+                      MAX_PARTICLES/4, MAX_PARTICLES/2, deltaTime);
+
+  ts[2] = std::thread(mThread, std::ref(mPositions), std::ref(mMasses),
+                      std::ref(mAccelerations), std::ref(mVelocities),
+                      MAX_PARTICLES/2, 3*MAX_PARTICLES/4, deltaTime);
+
+  ts[3] = std::thread(mThread, std::ref(mPositions), std::ref(mMasses),
+                      std::ref(mAccelerations), std::ref(mVelocities),
+                      3*MAX_PARTICLES/4, MAX_PARTICLES,deltaTime);
+
+  for(auto& t : ts) t.join();
 }
-
 
