@@ -1,47 +1,29 @@
 #pragma once
-
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
+#include <cmath>
+#include <glm/gtc/matrix_transform.hpp>
 
 class Camera {
 public:
-  Camera();
-
-  const glm::vec3& position() const;
-  void setPosition(const glm::vec3& position);
-  void offsetPosition(const glm::vec3& offset);
-
-  float fieldOfView() const;
-  void setFieldOfView(float fieldOfView);
-
-  float nearPlane() const;
-  float farPlane() const;
-
-  void setNearAndFarPlanes(float nearPlane, float farPlane);
-
-  glm::mat4 orientation() const;
-  void offsetOrientation(float upAngle, float rightAngle);
-
-  void lookAt(const glm::vec3& position);
-
-  float viewportAspectRatio() const;
-  void setViewportAspectRatio(float viewportAspectRatio);
-
-  glm::vec3 forward() const;
-  glm::vec3 right() const;
-  glm::vec3 up() const;
-
-  glm::mat4 matrix() const;
-  glm::mat4 projection() const;
-  glm::mat4 view() const;
-
-private:
+  glm::mat4 mViewMatrix;
+  glm::mat4 mProjMatrix;
   glm::vec3 mPosition;
-  float mHorizontalAngle;
-  float mVerticalAngle;
-  float mFieldOfView;
-  float mNearPlane;
-  float mFarPlane;
-  float mViewportAspectRatio;
+  glm::vec3 mTarget;
 
-  void normalizeAngles();
+  Camera(unsigned int width, unsigned int height) {
+    mProjMatrix = glm::perspective<float>(45.0f, (float)width/(float)height, 1.0f, 1000.0f);
+    mPosition = glm::vec3(0,0,0);
+    mTarget = glm::vec3(0,0,0);
+    rebuildView();
+  }
+
+  void move(glm::vec3 v) {
+    mPosition += v;
+    rebuildView();
+  }
+
+  void rebuildView() {
+    mViewMatrix = glm::lookAt(mPosition, mTarget, glm::vec3(0,1,0));
+  }
 };
