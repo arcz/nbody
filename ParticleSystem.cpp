@@ -3,9 +3,10 @@
 #include <random>
 #include <thread>
 
-static const unsigned MAX_PARTICLES = 500;
+static const unsigned MAX_PARTICLES = 700;
 
-ParticleSystem::ParticleSystem(glm::mat4* viewMatrix, glm::mat4* projMatrix) :
+ParticleSystem::ParticleSystem(const glm::mat4* const viewMatrix,
+                               const glm::mat4* const projMatrix) :
   mProjMatrix(projMatrix),
   mViewMatrix(viewMatrix)
 {
@@ -169,7 +170,7 @@ for(unsigned i=start; i<end; i++){
 	}
     mVelocities[i] += mAccelerations[i] * deltaTime;
     mPositions[i] += mVelocities[i] * deltaTime;
-} 
+}
 
 }
 

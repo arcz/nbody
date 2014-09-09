@@ -4,26 +4,67 @@
 #include <cmath>
 #include <glm/gtc/matrix_transform.hpp>
 
+/**
+ * Class representing basic camera
+ */
 class Camera {
 public:
+  /**
+   * Constructor, calculated projection matrix
+   * @param width width of viewport
+   * @param height height of viewport
+   */
+  Camera(unsigned int width, unsigned int height);
+
+  /**
+   * Getter for view matrix
+   * @return view matrix
+   */
+  const glm::mat4& viewMatrix();
+
+  /**
+   * Getter for projection matrix
+   * @return projection matrix
+   */
+  const glm::mat4& projMatrix();
+
+  /**
+   * Move camera by vector relative to current position
+   * @param v vector of distance to be added
+   */
+  void move(const glm::vec3& v);
+
+  /**
+   * Make camera look at specific target point
+   * @param target point in space where to look at
+   */
+  void target(const glm::vec3& target);
+
+private:
+  /**
+   * View matrix
+   * http://3dgep.com/understanding-the-view-matrix/
+   */
   glm::mat4 mViewMatrix;
+
+  /**
+   * Projection matrix
+   * http://www.songho.ca/opengl/gl_projectionmatrix.html
+   */
   glm::mat4 mProjMatrix;
+
+  /**
+   * Current position of camera
+   */
   glm::vec3 mPosition;
+
+  /**
+   * Current target of camera
+   */
   glm::vec3 mTarget;
 
-  Camera(unsigned int width, unsigned int height) {
-    mProjMatrix = glm::perspective<float>(45.0f, (float)width/(float)height, 1.0f, 1000.0f);
-    mPosition = glm::vec3(0,0,0);
-    mTarget = glm::vec3(0,0,0);
-    rebuildView();
-  }
-
-  void move(glm::vec3 v) {
-    mPosition += v;
-    rebuildView();
-  }
-
-  void rebuildView() {
-    mViewMatrix = glm::lookAt(mPosition, mTarget, glm::vec3(0,1,0));
-  }
+  /**
+   * Rebuild view matrix based on current position and target
+   */
+  void rebuildView();
 };

@@ -73,7 +73,7 @@ int main() {
   // Check for OpenGL errors until this line
   std::cerr << __FILE__ << ":" << __LINE__ << ": " << glGetError() << std::endl;
 
-  ParticleSystem particleSystem(&camera.mViewMatrix, &camera.mProjMatrix);
+  ParticleSystem particleSystem(&camera.viewMatrix(), &camera.projMatrix());
 
   // time of rendering previous frame
   double deltaTime = 1.0;

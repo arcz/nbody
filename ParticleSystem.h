@@ -4,13 +4,14 @@
 
 class ParticleSystem {
 public:
-  ParticleSystem(glm::mat4* viewMatrix, glm::mat4* projMatrix);
+  ParticleSystem(const glm::mat4* const viewMatrix,
+                 const glm::mat4* const projMatrix);
   void draw();
   void update(float deltaTime);
 
 protected:
-  glm::mat4* mViewMatrix;
-  glm::mat4* mProjMatrix;
+  const glm::mat4* const mViewMatrix;
+  const glm::mat4* const mProjMatrix;
   Program mProgram;
   GLuint mBillboardVertexBuffer;
   GLuint mParticlesPositionBuffer;
