@@ -6,7 +6,8 @@ static const unsigned MAX_PARTICLES = 500;
 
 ParticleSystem::ParticleSystem(glm::mat4* viewMatrix, glm::mat4* projMatrix) :
   mProjMatrix(projMatrix),
-  mViewMatrix(viewMatrix)
+  mViewMatrix(viewMatrix),
+  b(MAX_PARTICLES)
 {
   // The VBO containing the 4 vertices of the particles.
   // Thanks to instancing, they will be shared by all particles.
@@ -40,6 +41,7 @@ ParticleSystem::ParticleSystem(glm::mat4* viewMatrix, glm::mat4* projMatrix) :
   mProgram.setShaders(shaders);
 
   // RANDOMIZE
+  /*
   std::random_device rd;
   std::default_random_engine gen(rd());
   std::uniform_real_distribution<float> dist(-100.0f, 100.0f);
@@ -58,6 +60,14 @@ ParticleSystem::ParticleSystem(glm::mat4* viewMatrix, glm::mat4* projMatrix) :
     mVelocities.push_back(glm::vec3(dist3(gen), dist3(gen), dist3(gen)));
     mAccelerations.push_back(glm::vec3(0, 0, 0));
     mMasses.push_back(dist2(gen));
+  }*/
+  b.setRandom(-100.0, 100.0, 10.0, 1000.0);
+  Cialo * data = b.getData();
+  for(int i=0; i<MAX_PARTICLES; ++i){
+  	mPositions.push_back(glm::vec3(data[i].getPoz().getX()-150, data[i].getPoz().getY(), data[i].getPoz().getZ()));
+	mVelocities.push_back(glm::vec3(0,0,0));
+	mAccelerations.push_back(glm::vec3(0,0,0));
+	mMasses.push_back(data[i].getMasa());
   }
 
   std::cerr << __FILE__ << ":" << __LINE__ << ": " << glGetError() << std::endl;
@@ -153,7 +163,7 @@ static constexpr float G = 6.673848080E-3;
 static constexpr float EPS2 = 1.0E+2;
 
 void ParticleSystem::update(float deltaTime) {
-
+/*
   for (unsigned i = 0; i < MAX_PARTICLES; i++) {
     mAccelerations[i] = glm::vec3(0.0f, 0.0f, 0.0f);
 
@@ -172,9 +182,20 @@ void ParticleSystem::update(float deltaTime) {
       mAccelerations[i].y += ry * s;
       mAccelerations[i].z += rz * s;
     }
-
-    mVelocities[i] += mAccelerations[i] * deltaTime;
-    mPositions[i] += mVelocities[i] * deltaTime;
+*/
+	b.next(deltaTime);
+	Cialo * data = b.getData();
+	for(int i=0; i<MAX_PARTICLES; i++){
+	mVelocities[i].x = data[i].getPred().getX();
+	mVelocities[i].y = data[i].getPred().getY();
+	mVelocities[i].z = data[i].getPred().getZ();
+	mPositions[i].x = data[i].getPoz().getX();
+	mPositions[i].y = data[i].getPoz().getY();
+	mPositions[i].z = data[i].getPoz().getZ();
+	mAccelerations[i].x = data[i].getSila().getX()/data[i].getMasa();
+	mAccelerations[i].y = data[i].getSila().getY()/data[i].getMasa();
+	mAccelerations[i].z = data[i].getSila().getZ()/data[i].getMasa();
+	}
   }
-}
+
 

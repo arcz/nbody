@@ -1,6 +1,7 @@
 #pragma once
 #include "Headers.h"
 #include "Program.h"
+#include "Bufor.h"
 
 class ParticleSystem {
 public:
@@ -19,4 +20,5 @@ protected:
   std::vector<glm::vec3> mVelocities;
   std::vector<glm::vec3> mAccelerations;
   std::vector<float> mMasses;
+  Bufor b;
 };
