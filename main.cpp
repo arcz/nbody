@@ -76,12 +76,21 @@ int main() {
   ParticleSystem particleSystem(&camera.viewMatrix(), &camera.projMatrix());
 
   // time of rendering previous frame
-  double deltaTime = 1.0;
+  float deltaTime = 1.0;
   const float cameraSpeed = 200.0f;
+  float time_buffer = 0.0f;
+  char str_buffer[10];
 
   // Main loop, runs forever until exit key pressed
   while (!glfwWindowShouldClose(window))
   {
+    time_buffer += deltaTime;
+    if (time_buffer > 1.0f) {
+      sprintf(str_buffer, "FPS: %f", 1.0f/deltaTime);
+      glfwSetWindowTitle(window, str_buffer);
+      time_buffer = 0.0f;
+    }
+
     float old_time = glfwGetTime();
 
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
